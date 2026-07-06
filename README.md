@@ -1,6 +1,6 @@
 # Document Audio Reader
 
-A full-stack Document-to-Speech application that converts PDF and TXT files into lifelike audio using the ElevenLabs API.
+A Document-to-Speech application that converts PDF and TXT files into lifelike audio using the ElevenLabs API.
 
 **Backend:** FastAPI (Python) · **Frontend:** React + Vite + Tailwind CSS v4
 
@@ -10,7 +10,7 @@ A full-stack Document-to-Speech application that converts PDF and TXT files into
 
 - **Docker** and **Docker Compose** (Recommended)
 - OR **Python 3.12+** and **uv** (for local development)
-- **Node.js 18+** and npm (if running locally without Docker)
+- **Node.js 22+** and npm (if running locally without Docker)
 - An **[ElevenLabs](https://elevenlabs.io/) API key** (free tier available)
 
 ---
@@ -53,7 +53,7 @@ Edit `.env` to include your actual API key:
 ELEVENLABS_API_KEY=your-api-key-here
 ```
 
-### 2. Run with Docker Compose (Recommended)
+### 2. Run with Docker Compose
 
 Start both the backend and frontend in one command:
 
@@ -63,42 +63,6 @@ docker-compose up --build
 
 - The API will be available at **http://localhost:8000**
 - The web app will be available at **http://localhost:5173**
-
----
-
-### Alternative: Run locally (without Docker)
-
-If you prefer to run the services directly on your host machine.
-
-#### Backend (using uv)
-
-```bash
-cd backend
-
-# Create a virtual environment with uv and activate it
-uv venv
-source .venv/bin/activate
-
-# Install dependencies using uv
-uv pip install -r requirements.txt
-
-# Start the server
-uvicorn main:app --reload --port 8000
-```
-
-#### Frontend
-
-Open a **new terminal** and run:
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start the dev server
-npm run dev
-```
 
 ---
 
