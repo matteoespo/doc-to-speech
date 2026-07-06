@@ -8,8 +8,9 @@ A full-stack Document-to-Speech application that converts PDF and TXT files into
 
 ## Prerequisites
 
-- **Python 3.12+**
-- **Node.js 18+** and npm
+- **Docker** and **Docker Compose** (Recommended)
+- OR **Python 3.12+** and **uv** (for local development)
+- **Node.js 18+** and npm (if running locally without Docker)
 - An **[ElevenLabs](https://elevenlabs.io/) API key** (free tier available)
 
 ---
@@ -28,7 +29,10 @@ doc-to-speech/
 │   │   └── main.jsx         # React entry point
 │   ├── index.html           # HTML shell
 │   ├── vite.config.js       # Vite + Tailwind config
-│   └── package.json         # Node dependencies
+│   ├── package.json         # Node dependencies
+│   └── Dockerfile           # Frontend container
+├── docker-compose.yml       # Docker services configuration
+├── .env.example             # Example environment variables
 └── README.md
 ```
 
@@ -38,45 +42,63 @@ doc-to-speech/
 
 ### 1. Set your ElevenLabs API key
 
+Copy the example `.env` file and add your key:
+
 ```bash
-export ELEVENLABS_API_KEY="your-api-key-here"
+cp .env.example .env
 ```
 
-> **Tip:** Add this to your `~/.bashrc` or `~/.zshrc` to persist across sessions.
+Edit `.env` to include your actual API key:
+```env
+ELEVENLABS_API_KEY=your-api-key-here
+```
 
-### 2. Start the backend
+### 2. Run with Docker Compose (Recommended)
+
+Start both the backend and frontend in one command:
+
+```bash
+docker-compose up --build
+```
+
+- The API will be available at **http://localhost:8000**
+- The web app will be available at **http://localhost:5173**
+
+---
+
+### Alternative: Run locally (without Docker)
+
+If you prefer to run the services directly on your host machine.
+
+#### Backend (using uv)
 
 ```bash
 cd backend
 
-# Create and activate a virtual environment (recommended)
-python3 -m venv venv
-source venv/bin/activate
+# Create a virtual environment with uv and activate it
+uv venv
+source .venv/bin/activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies using uv
+uv pip install -r requirements.txt
 
 # Start the server
 uvicorn main:app --reload --port 8000
 ```
 
-The API will be running at **http://localhost:8000**. You can verify it by visiting http://localhost:8000 in your browser.
-
-### 3. Start the frontend
+#### Frontend
 
 Open a **new terminal** and run:
 
 ```bash
 cd frontend
 
-# Install dependencies (skip if already done)
+# Install dependencies
 npm install
 
 # Start the dev server
 npm run dev
 ```
-
-The app will be running at **http://localhost:5173**.
 
 ---
 

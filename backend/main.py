@@ -19,6 +19,10 @@ from elevenlabs import ElevenLabs
 # App initialisation
 # ---------------------------------------------------------------------------
 
+from dotenv import load_dotenv
+load_dotenv()
+
+
 app = FastAPI(title="Document-to-Speech API")
 
 # Allow the Vite dev-server origin for local development.
