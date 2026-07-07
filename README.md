@@ -7,7 +7,7 @@
   [![Build Status](https://github.com/matteoespo/doc-to-speech/actions/workflows/ci.yml/badge.svg)](https://github.com/matteoespo/doc-to-speech/actions)
   [![Powered By ElevenLabs](https://img.shields.io/badge/Powered%20By-ElevenLabs-black?logo=elevenlabs)](https://elevenlabs.io/)
 
-  **A full-stack Document-to-Speech application that converts PDF and TXT files into ultra-realistic, lifelike audio using the ElevenLabs API.**
+  **A Document-to-Speech application that converts PDF and TXT files into realistic audio using the ElevenLabs API.**
 
   **Backend:** FastAPI (Python) · **Frontend:** React + Vite + Tailwind CSS v4
 </div>
