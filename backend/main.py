@@ -11,22 +11,18 @@ import os
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import PyPDF2
 from elevenlabs import ElevenLabs
 
-# ---------------------------------------------------------------------------
 # App initialisation
-# ---------------------------------------------------------------------------
-
 from dotenv import load_dotenv
 load_dotenv()
 
 
 app = FastAPI(title="Document-to-Speech API")
 
-# Allow the Vite dev-server origin for local development.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],

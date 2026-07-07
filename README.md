@@ -84,7 +84,7 @@ docker-compose up --build
 
 ---
 
-## 🎙️ Key Features
+## Key Features
 
 - **Text Review & Editing**: Extracted text from your PDF or TXT isn't just blindly sent to the API. It is loaded into a sleek editor where you can read, tweak, or shorten it before generating audio.
 - **Dynamic Voice Selection**: Don't settle for one voice. You can instantly select between multiple premium ElevenLabs voices (George, Rachel, Drew, Clyde) right from the frontend to match the tone of your document.
