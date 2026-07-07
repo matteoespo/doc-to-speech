@@ -11,7 +11,8 @@ import os
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
+from pydantic import BaseModel
 import PyPDF2
 from elevenlabs import ElevenLabs
 
@@ -53,11 +54,9 @@ async def root():
     return {"status": "ok", "message": "Document-to-Speech API"}
 
 
-@app.post("/api/convert-document")
-async def convert_document(file: UploadFile = File(...)):
-    """Accept a PDF or TXT upload, extract text, and return MP3 audio."""
-
-    # --- 1. Validate the file extension --------------------------------
+@app.post("/api/extract-text")
+async def extract_text(file: UploadFile = File(...)):
+    """Accept a PDF or TXT upload and extract text."""
     filename = file.filename or ""
     extension = os.path.splitext(filename)[1].lower()
 
@@ -67,13 +66,11 @@ async def convert_document(file: UploadFile = File(...)):
             detail="Unsupported file type. Please upload a .pdf or .txt file.",
         )
 
-    # --- 2. Read and extract text --------------------------------------
     file_bytes = await file.read()
     text = ""
 
     if extension == ".txt":
         text = file_bytes.decode("utf-8")
-
     elif extension == ".pdf":
         reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
         for page in reader.pages:
@@ -81,40 +78,52 @@ async def convert_document(file: UploadFile = File(...)):
             if page_text:
                 text += page_text
 
-    # --- 3. Validate extracted text ------------------------------------
     if not text.strip():
         raise HTTPException(
             status_code=400,
             detail="Could not extract any text from the document.",
         )
 
-    # --- 4. Truncate to a reasonable length ----------------------------
-    # ElevenLabs requests can be large; cap at 2 000 characters to keep
-    # latency and cost manageable during development.
+    return {"text": text[:2000]}  # Cap at 2000 characters initially
+
+
+class AudioRequest(BaseModel):
+    text: str
+    voice_id: str = "JBFqnCBsd6RMkjVDRZzb"
+
+
+@app.post("/api/generate-audio")
+async def generate_audio(request: AudioRequest):
+    """Convert text to speech using ElevenLabs and stream the response."""
+    text = request.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="Text cannot be empty.")
+
+    # Cap at 2000 characters for safety/costs
     text = text[:2000]
 
-    # --- 5. Convert text to speech via ElevenLabs ----------------------
     try:
         client = ElevenLabs(api_key=os.environ.get("ELEVENLABS_API_KEY"))
 
         audio_iterator = client.text_to_speech.convert(
-            voice_id="JBFqnCBsd6RMkjVDRZzb",
+            voice_id=request.voice_id,
             model_id="eleven_flash_v2_5",
             text=text,
             output_format="mp3_44100_128",
         )
 
-        # Materialise the streamed chunks into a single bytes object.
-        audio_bytes = b"".join(audio_iterator)
+        def audio_streamer():
+            for chunk in audio_iterator:
+                if chunk:
+                    yield chunk
+
+        return StreamingResponse(
+            audio_streamer(),
+            media_type="audio/mpeg",
+            headers={"Content-Disposition": 'inline; filename="output.mp3"'},
+        )
     except Exception as exc:
         raise HTTPException(
             status_code=500,
             detail=f"Text-to-speech conversion failed: {exc}",
         )
-
-    # --- 6. Return the audio as a downloadable MP3 ---------------------
-    return Response(
-        content=audio_bytes,
-        media_type="audio/mpeg",
-        headers={"Content-Disposition": 'attachment; filename="output.mp3"'},
-    )

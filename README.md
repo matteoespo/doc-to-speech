@@ -1,8 +1,16 @@
-# Document Audio Reader
+<div align="center">
+  <img src="assets/hero.jpg" alt="Document Audio Reader Banner" width="100%" />
 
-A Document-to-Speech application that converts PDF and TXT files into lifelike audio using the ElevenLabs API.
+  # Document Audio Reader
 
-**Backend:** FastAPI (Python) · **Frontend:** React + Vite + Tailwind CSS v4
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Build Status](https://github.com/matteoespo/doc-to-speech/actions/workflows/ci.yml/badge.svg)](https://github.com/matteoespo/doc-to-speech/actions)
+  [![Powered By ElevenLabs](https://img.shields.io/badge/Powered%20By-ElevenLabs-black?logo=elevenlabs)](https://elevenlabs.io/)
+
+  **A full-stack Document-to-Speech application that converts PDF and TXT files into ultra-realistic, lifelike audio using the ElevenLabs API.**
+
+  **Backend:** FastAPI (Python) · **Frontend:** React + Vite + Tailwind CSS v4
+</div>
 
 ---
 
@@ -76,17 +84,38 @@ docker-compose up --build
 
 ---
 
+## 🎙️ Key Features
+
+- **Text Review & Editing**: Extracted text from your PDF or TXT isn't just blindly sent to the API. It is loaded into a sleek editor where you can read, tweak, or shorten it before generating audio.
+- **Dynamic Voice Selection**: Don't settle for one voice. You can instantly select between multiple premium ElevenLabs voices (George, Rachel, Drew, Clyde) right from the frontend to match the tone of your document.
+- **Ultra-Realistic Intonation**: The application utilizes the `eleven_flash_v2_5` model to produce voices that naturally pause, breathe, and inflect based on context. 
+- **Context-Aware Emotion**: Unlike robotic TTS of the past, ElevenLabs parses the document text to understand sentiment, delivering a reading that is genuinely engaging to listen to.
+- **High-Speed Streaming Compatibility**: The backend consumes the audio data as an iterator and streams it back to the client instantly, showcasing ElevenLabs' incredibly low-latency speech generation API.
+
+---
+
 ## API Reference
 
-### `POST /api/convert-document`
+### `POST /api/extract-text`
 
-Accepts a file upload and returns an MP3 audio file.
+Accepts a file upload and returns the extracted text.
 
 | Parameter | Type       | Description                    |
 | --------- | ---------- | ------------------------------ |
 | `file`    | `UploadFile` | A `.pdf` or `.txt` file      |
 
-**Response:** `audio/mpeg` (MP3 binary stream)
+**Response:** `{"text": "extracted document text..."}`
+
+### `POST /api/generate-audio`
+
+Accepts JSON data with the text and desired voice ID, returning an MP3 audio stream.
+
+| Parameter  | Type   | Description                                      |
+| ---------- | ------ | ------------------------------------------------ |
+| `text`     | `str`  | The text to be spoken (max 2000 chars)           |
+| `voice_id` | `str`  | The ElevenLabs Voice ID (default: George's ID)   |
+
+**Response:** `audio/mpeg` (MP3 streaming binary)
 
 **Constraints:**
 - Text is truncated to the first **2,000 characters** before conversion.
